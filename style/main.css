@@ -1,0 +1,131 @@
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f7f5fc;
+  color: #333;
+}
+
+/* Container centrado */
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* HEADER */
+.header {
+  background-color: #6a0dad;
+  color: white;
+  padding: 1rem 0;
+  text-align: center;
+}
+
+.logo {
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.nav {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.nav a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav a:hover {
+  color: #d1b3ff;
+}
+
+/* HERO / PRODUCTOS */
+.hero {
+  text-align: center;
+  padding: 3rem 1rem;
+  background: linear-gradient(to bottom, #ffffff, #f1e6ff);
+}
+
+.hero h2 {
+  font-size: 2.2rem;
+  color: #6a0dad;
+  margin-bottom: 2rem;
+}
+
+/* GRID de productos */
+.grid-productos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  justify-items: center;
+  padding-bottom: 3rem;
+}
+
+.producto {
+  background-color: white;
+  border: 1px solid #e5d5ff;
+  border-radius: 10px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 280px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(106, 13, 173, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.producto:hover {
+  transform: translateY(-5px);
+}
+
+.producto img {
+  width: 100%;
+  height: 180px;
+  object-fit: contain;
+  margin-bottom: 1rem;
+}
+
+.producto h3 {
+  font-size: 1.2rem;
+  color: #6a0dad;
+  margin-bottom: 0.5rem;
+}
+
+.producto p {
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.producto button {
+  background-color: #6a0dad;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.producto button:hover {
+  background-color: #5b009d;
+}
+
+/* FOOTER */
+.footer {
+  background-color: #4a0072;
+  color: white;
+  text-align: center;
+  padding: 1rem 0;
+  margin-top: 2rem;
+  font-size: 0.9rem;
+}
