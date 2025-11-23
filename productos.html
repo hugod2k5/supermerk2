@@ -6,6 +6,161 @@
     <title>Productos - Supermercado</title>
     <link rel="stylesheet" href="style/main.css" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --azul: #0a66ff; --blanco: #ffffff; --gris-oscuro: #222; --verde: #28a745; --rojo: #dc3545; }
+
+        /* HEADER azul */
+        .header { background: var(--azul); color: var(--blanco); }
+        .header .container { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+        .nav { display:flex; gap:1rem; align-items:center; }
+        .nav a { color: var(--blanco); text-decoration:none; font-weight:600; }
+        .cart-summary { color: var(--blanco); font-weight:600; display:flex; gap:.5rem; align-items:center; position:relative; cursor:default; }
+        .cart-summary .total { background:rgba(255,255,255,0.12); padding:6px 10px; border-radius:6px; }
+
+        /* dropdown carrito */
+        .cart-dropdown {
+            position:absolute;
+            right:0;
+            top:calc(100% + 10px);
+            width:340px;
+            max-height:400px; /* Un poco más alto para que quepan los botones */
+            overflow:auto;
+            background:#ffffff;
+            color:var(--gris-oscuro);
+            border:2px solid var(--azul);
+            border-radius:10px;
+            box-shadow:0 10px 30px rgba(10,102,255,0.12);
+            padding:10px;
+            display:none;
+            z-index:1200;
+        }
+        .cart-summary.open .cart-dropdown { display:block; }
+
+        .cart-items { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; margin-bottom: 15px; }
+        .cart-item { display:flex; gap:10px; align-items:center; }
+        .cart-item img { width:56px; height:56px; object-fit:cover; border-radius:8px; border:1px solid #eee; }
+        .cart-item .meta { flex:1; }
+        .cart-item .meta .name { font-weight:700; color:var(--gris-oscuro); margin-bottom:4px; }
+        .cart-item .meta .qty-sub { font-size:13px; color:#444; display:flex; justify-content:space-between; gap:8px; }
+        .cart-item .remove { background:transparent; border:none; color:var(--rojo); font-weight:700; cursor:pointer; }
+
+        /* Footer del carrito y botones de acción */
+        .cart-footer { margin-top:8px; border-top:1px dashed #ddd; padding-top:12px; display:flex; flex-direction: column; gap:10px; }
+        .cart-total-row { display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; }
+        
+        .cart-actions { display: flex; gap: 10px; width: 100%; }
+        
+        .cart-actions button { 
+            flex: 1; /* Para que ambos botones midan lo mismo */
+            border:none; 
+            padding:10px 12px; 
+            border-radius:8px; 
+            cursor:pointer; 
+            font-weight:700; 
+            color: #fff;
+            transition: opacity 0.2s;
+        }
+        
+        .cart-actions button:hover { opacity: 0.9; }
+
+        /* Estilos específicos para los botones del carrito */
+        #checkout-btn { background-color: var(--verde); }
+        #clear-cart { background-color: var(--rojo); }
+
+        /* Productos: Grid y Layout */
+        .hero { background: transparent; padding: 18px 0; }
+        .grid-productos { 
+            display:grid; 
+            gap:18px; 
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+            align-items: stretch; 
+        }
+        
+        .producto {
+            background: var(--azul) !important;
+            color: var(--blanco) !important;
+            border-radius:10px;
+            padding:12px;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            gap:8px;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .producto img { 
+            width: 100%; 
+            height: 140px; 
+            object-fit: contain; 
+            filter: none; 
+            margin-bottom: 5px;
+        }
+
+        .hero h2 { color: var(--azul); }
+        .producto h3, .producto p { color: var(--blanco) !important; margin:0; text-align:center; }
+        
+        .producto h3 {
+            font-size: 1.1rem;
+            min-height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .producto p { font-weight:600; font-size: 1.1rem; margin-bottom: 5px; }
+
+        .producto button.add-to-cart {
+            margin-top: auto; 
+            padding:8px 12px;
+            background: var(--blanco);
+            color: var(--azul);
+            border:2px solid var(--azul);
+            border-radius:8px;
+            cursor:pointer;
+            font-weight:700;
+            transition: transform .12s ease, box-shadow .12s ease;
+            width: 100%;
+        }
+        .producto button.add-to-cart:hover, .producto button.add-to-cart:focus { transform: scale(1.06); box-shadow: 0 8px 20px rgba(10,102,255,0.12); }
+        .producto button.add-to-cart:active { transform: scale(0.98); }
+
+        .producto .controls { margin-top:8px; display:flex; gap:8px; align-items:center; justify-content: center; width: 100%; }
+        
+        .qty-btn {
+            padding:6px;
+            background: var(--blanco) !important;
+            color: var(--azul) !important;
+            border:2px solid var(--azul) !important;
+            border-radius:8px;
+            cursor:pointer;
+            font-weight:700;
+            font-size:18px;
+            line-height:1;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            width:40px;
+            height:40px;
+            transition: transform .12s ease, box-shadow .12s ease, background .12s;
+        }
+        .qty-btn:hover, .qty-btn:focus { transform: scale(1.08); box-shadow: 0 6px 18px rgba(10,102,255,0.12); }
+        .qty-btn:active { transform: scale(0.98); }
+
+        input[type=number]::-webkit-outer-spin-button,
+        input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+
+        .qty-input { width:60px; padding:8px; border-radius:8px; border:1px solid rgba(255,255,255,0.18); text-align:center; background: rgba(255,255,255,0.06); color: var(--blanco); font-weight: bold; }
+
+        .footer { border-top: 4px solid var(--azul); padding:18px 0; margin-top:28px; background: transparent; }
+        .footer p { color: var(--azul) !important; margin:0; }
+
+        body { background: #ffffff; font-family: 'Poppins', sans-serif; color:#222; padding:0; margin:0; }
+        .container { width:95%; max-width:1100px; margin:0 auto; }
+        .hero .container { padding:18px 0; }
+
+        #cart-total.flash { transform: scale(1.04); transition: transform .14s ease; }
+    </style>
 </head>
 <body>
 
@@ -18,6 +173,27 @@
             <a href="ofertas.html">Ofertas</a>
             <a href="https://wa.me/595972100367" target="_blank">Contacto</a>
         </nav>
+
+        <div class="cart-summary" aria-live="polite" title="Total del carrito" id="cart-summary">
+            <span>Carrito:</span>
+            <span class="total" id="cart-total">0 Gs</span>
+
+            <div class="cart-dropdown" id="cart-dropdown" aria-hidden="true">
+                <ul class="cart-items" id="cart-items"></ul>
+                
+                <div class="cart-footer">
+                    <div class="cart-total-row">
+                        <span>Total:</span>
+                        <strong id="cart-total-final">0 Gs</strong>
+                    </div>
+                    <div class="cart-actions">
+                        <button id="clear-cart">Vaciar</button>
+                        <button id="checkout-btn">Pagar</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
 </header>
 
@@ -27,182 +203,268 @@
 
         <div class="grid-productos">
 
-            <!-- ===========================
-                 LÁCTEOS
-            ============================ -->
-            <div class="producto">
+            <div class="producto" data-price="7000">
                 <img src="assets/img/leche.png" alt="Leche entera">
                 <h3>Leche Entera</h3>
                 <p>7.000Gs</p>
-                <button>Agregar al carrito</button>
+                <button class="add-to-cart">Agregar al carrito</button>
+                <div class="controls">
+                    <button class="qty-btn minus" aria-label="Disminuir">-</button>
+                    <input class="qty-input" type="number" min="0" value="0" />
+                    <button class="qty-btn plus" aria-label="Aumentar">+</button>
+                </div>
             </div>
 
-            <div class="producto">
+            <div class="producto" data-price="6500">
                 <img src="assets/img/yogurt.png" alt="Yogurt">
                 <h3>Yogurt Natural</h3>
                 <p>6.500Gs</p>
-                <button>Agregar al carrito</button>
+                <button class="add-to-cart">Agregar al carrito</button>
+                <div class="controls">
+                    <button class="qty-btn minus">-</button>
+                    <input class="qty-input" type="number" min="0" value="0" />
+                    <button class="qty-btn plus">+</button>
+                </div>
             </div>
 
-            <div class="producto">
+            <div class="producto" data-price="18000">
                 <img src="assets/img/queso.png" alt="Queso mantecoso">
                 <h3>Queso Mantecoso</h3>
                 <p>18.000Gs</p>
-                <button>Agregar al carrito</button>
+                <button class="add-to-cart">Agregar al carrito</button>
+                <div class="controls">
+                    <button class="qty-btn minus">-</button>
+                    <input class="qty-input" type="number" min="0" value="0" />
+                    <button class="qty-btn plus">+</button>
+                </div>
             </div>
 
-            <!-- ===========================
-                 ALMACÉN – ARROZ / FIDEOS
-            ============================ -->
-            <div class="producto">
+            <div class="producto" data-price="10000">
                 <img src="assets/img/arroz.png" alt="Arroz 1kg">
                 <h3>Arroz 1kg</h3>
                 <p>10.000Gs</p>
-                <button>Agregar al carrito</button>
+                <button class="add-to-cart">Agregar al carrito</button>
+                <div class="controls">
+                    <button class="qty-btn minus">-</button>
+                    <input class="qty-input" type="number" min="0" value="0" />
+                    <button class="qty-btn plus">+</button>
+                </div>
             </div>
 
-            <div class="producto">
+            <div class="producto" data-price="6000">
                 <img src="assets/img/fideos.png" alt="Fideos">
                 <h3>Fideos Spaghetti</h3>
                 <p>6.000Gs</p>
-                <button>Agregar al carrito</button>
+                <button class="add-to-cart">Agregar al carrito</button>
+                <div class="controls">
+                    <button class="qty-btn minus">-</button>
+                    <input class="qty-input" type="number" min="0" value="0" />
+                    <button class="qty-btn plus">+</button>
+                </div>
             </div>
 
-            <div class="producto">
+            <div class="producto" data-price="7500">
                 <img src="assets/img/harina.png" alt="Harina">
                 <h3>Harina 1kg</h3>
                 <p>7.500Gs</p>
-                <button>Agregar al carrito</button>
+                <button class="add-to-cart">Agregar al carrito</button>
+                <div class="controls">
+                    <button class="qty-btn minus">-</button>
+                    <input class="qty-input" type="number" min="0" value="0" />
+                    <button class="qty-btn plus">+</button>
+                </div>
             </div>
 
-            <!-- ===========================
-                 PANADERÍA
-            ============================ -->
-            <div class="producto">
+            <div class="producto" data-price="5000">
                 <img src="assets/img/pan.png" alt="Pan">
                 <h3>Pan x Kg</h3>
                 <p>5.000Gs</p>
-                <button>Agregar al carrito</button>
+                <button class="add-to-cart">Agregar al carrito</button>
+                <div class="controls">
+                    <button class="qty-btn minus">-</button>
+                    <input class="qty-input" type="number" min="0" value="0" />
+                    <button class="qty-btn plus">+</button>
+                </div>
             </div>
 
-            <div class="producto">
+            <div class="producto" data-price="4000">
                 <img src="assets/img/chipa.png" alt="Chipa">
                 <h3>Chipa Tradicional</h3>
                 <p>4.000Gs</p>
-                <button>Agregar al carrito</button>
+                <button class="add-to-cart">Agregar al carrito</button>
+                <div class="controls">
+                    <button class="qty-btn minus">-</button>
+                    <input class="qty-input" type="number" min="0" value="0" />
+                    <button class="qty-btn plus">+</button>
+                </div>
             </div>
 
-            <!-- ===========================
-                 BEBIDAS
-            ============================ -->
-            <div class="producto">
+            <div class="producto" data-price="12000">
                 <img src="assets/img/coca.png" alt="Coca Cola">
                 <h3>Coca Cola 2L</h3>
                 <p>12.000Gs</p>
-                <button>Agregar al carrito</button>
+                <button class="add-to-cart">Agregar al carrito</button>
+                <div class="controls">
+                    <button class="qty-btn minus">-</button>
+                    <input class="qty-input" type="number" min="0" value="0" />
+                    <button class="qty-btn plus">+</button>
+                </div>
             </div>
 
-            <div class="producto">
+            <div class="producto" data-price="5000">
                 <img src="assets/img/agua.png" alt="Agua mineral">
                 <h3>Agua Mineral 2L</h3>
                 <p>5.000Gs</p>
-                <button>Agregar al carrito</button>
+                <button class="add-to-cart">Agregar al carrito</button>
+                <div class="controls">
+                    <button class="qty-btn minus">-</button>
+                    <input class="qty-input" type="number" min="0" value="0" />
+                    <button class="qty-btn plus">+</button>
+                </div>
             </div>
 
-            <div class="producto">
+            <div class="producto" data-price="8000">
                 <img src="assets/img/jugo.png" alt="Jugo">
                 <h3>Jugo de Naranja</h3>
                 <p>8.000Gs</p>
-                <button>Agregar al carrito</button>
+                <button class="add-to-cart">Agregar al carrito</button>
+                <div class="controls">
+                    <button class="qty-btn minus">-</button>
+                    <input class="qty-input" type="number" min="0" value="0" />
+                    <button class="qty-btn plus">+</button>
+                </div>
             </div>
 
-            <!-- ===========================
-                 FRUTAS
-            ============================ -->
-            <div class="producto">
+            <div class="producto" data-price="9000">
                 <img src="assets/img/manzana.png" alt="Manzanas">
                 <h3>Manzanas x Kg</h3>
                 <p>9.000Gs</p>
-                <button>Agregar al carrito</button>
+                <button class="add-to-cart">Agregar al carrito</button>
+                <div class="controls">
+                    <button class="qty-btn minus">-</button>
+                    <input class="qty-input" type="number" min="0" value="0" />
+                    <button class="qty-btn plus">+</button>
+                </div>
             </div>
 
-            <div class="producto">
+            <div class="producto" data-price="6000">
                 <img src="assets/img/banana.png" alt="Bananas">
                 <h3>Bananas x Kg</h3>
                 <p>6.000Gs</p>
-                <button>Agregar al carrito</button>
+                <button class="add-to-cart">Agregar al carrito</button>
+                <div class="controls">
+                    <button class="qty-btn minus">-</button>
+                    <input class="qty-input" type="number" min="0" value="0" />
+                    <button class="qty-btn plus">+</button>
+                </div>
             </div>
 
-            <div class="producto">
+            <div class="producto" data-price="7500">
                 <img src="assets/img/naranja.png" alt="Naranjas">
                 <h3>Naranjas x Kg</h3>
                 <p>7.500Gs</p>
-                <button>Agregar al carrito</button>
+                <button class="add-to-cart">Agregar al carrito</button>
+                <div class="controls">
+                    <button class="qty-btn minus">-</button>
+                    <input class="qty-input" type="number" min="0" value="0" />
+                    <button class="qty-btn plus">+</button>
+                </div>
             </div>
 
-            <!-- ===========================
-                 VERDURAS
-            ============================ -->
-            <div class="producto">
+            <div class="producto" data-price="8000">
                 <img src="assets/img/tomate.png" alt="Tomate">
                 <h3>Tomate x Kg</h3>
                 <p>8.000Gs</p>
-                <button>Agregar al carrito</button>
+                <button class="add-to-cart">Agregar al carrito</button>
+                <div class="controls">
+                    <button class="qty-btn minus">-</button>
+                    <input class="qty-input" type="number" min="0" value="0" />
+                    <button class="qty-btn plus">+</button>
+                </div>
             </div>
 
-            <div class="producto">
+            <div class="producto" data-price="4000">
                 <img src="assets/img/lechuga.png" alt="Lechuga">
                 <h3>Lechuga</h3>
                 <p>4.000Gs</p>
-                <button>Agregar al carrito</button>
+                <button class="add-to-cart">Agregar al carrito</button>
+                <div class="controls">
+                    <button class="qty-btn minus">-</button>
+                    <input class="qty-input" type="number" min="0" value="0" />
+                    <button class="qty-btn plus">+</button>
+                </div>
             </div>
 
-            <div class="producto">
+            <div class="producto" data-price="7000">
                 <img src="assets/img/cebolla.png" alt="Cebolla">
                 <h3>Cebolla x Kg</h3>
                 <p>7.000Gs</p>
-                <button>Agregar al carrito</button>
+                <button class="add-to-cart">Agregar al carrito</button>
+                <div class="controls">
+                    <button class="qty-btn minus">-</button>
+                    <input class="qty-input" type="number" min="0" value="0" />
+                    <button class="qty-btn plus">+</button>
+                </div>
             </div>
 
-            <!-- ===========================
-                 LIMPIEZA
-            ============================ -->
-            <div class="producto">
+            <div class="producto" data-price="15000">
                 <img src="assets/img/jabon.png" alt="Jabón">
                 <h3>Jabón en Polvo</h3>
                 <p>15.000Gs</p>
-                <button>Agregar al carrito</button>
+                <button class="add-to-cart">Agregar al carrito</button>
+                <div class="controls">
+                    <button class="qty-btn minus">-</button>
+                    <input class="qty-input" type="number" min="0" value="0" />
+                    <button class="qty-btn plus">+</button>
+                </div>
             </div>
 
-            <div class="producto">
+            <div class="producto" data-price="6000">
                 <img src="assets/img/lavandina.png" alt="Lavandina">
                 <h3>Lavandina 1L</h3>
                 <p>6.000Gs</p>
-                <button>Agregar al carrito</button>
+                <button class="add-to-cart">Agregar al carrito</button>
+                <div class="controls">
+                    <button class="qty-btn minus">-</button>
+                    <input class="qty-input" type="number" min="0" value="0" />
+                    <button class="qty-btn plus">+</button>
+                </div>
             </div>
 
-            <div class="producto">
+            <div class="producto" data-price="10000">
                 <img src="assets/img/desodorante.png" alt="Desodorante de ambiente">
-                <h3>Desodorante de Ambiente</h3>
+                <h3>Desodorante</h3>
                 <p>10.000Gs</p>
-                <button>Agregar al carrito</button>
+                <button class="add-to-cart">Agregar al carrito</button>
+                <div class="controls">
+                    <button class="qty-btn minus">-</button>
+                    <input class="qty-input" type="number" min="0" value="0" />
+                    <button class="qty-btn plus">+</button>
+                </div>
             </div>
 
-            <!-- ===========================
-                 SNACKS
-            ============================ -->
-            <div class="producto">
+            <div class="producto" data-price="8500">
                 <img src="assets/img/papas.png" alt="Papas fritas">
                 <h3>Papas Fritas</h3>
                 <p>8.500Gs</p>
-                <button>Agregar al carrito</button>
+                <button class="add-to-cart">Agregar al carrito</button>
+                <div class="controls">
+                    <button class="qty-btn minus">-</button>
+                    <input class="qty-input" type="number" min="0" value="0" />
+                    <button class="qty-btn plus">+</button>
+                </div>
             </div>
 
-            <div class="producto">
+            <div class="producto" data-price="9000">
                 <img src="assets/img/chocolate.png" alt="Chocolate">
                 <h3>Chocolate</h3>
                 <p>9.000Gs</p>
-                <button>Agregar al carrito</button>
+                <button class="add-to-cart">Agregar al carrito</button>
+                <div class="controls">
+                    <button class="qty-btn minus">-</button>
+                    <input class="qty-input" type="number" min="0" value="0" />
+                    <button class="qty-btn plus">+</button>
+                </div>
             </div>
 
         </div>
@@ -214,6 +476,173 @@
         <p>&copy; 2025 Supermercado Online. Creado por Hugo.</p>
     </div>
 </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const productos = Array.from(document.querySelectorAll('.producto'));
+    const cartTotalEl = document.getElementById('cart-total');
+    const cartSummary = document.getElementById('cart-summary');
+    const cartDropdown = document.getElementById('cart-dropdown');
+    const cartItemsEl = document.getElementById('cart-items');
+    const cartTotalFinal = document.getElementById('cart-total-final');
+    
+    // Elementos de acción
+    const clearBtn = document.getElementById('clear-cart');
+    const checkoutBtn = document.getElementById('checkout-btn'); // NUEVO BOTÓN
+
+    // carrito en memoria: { idx: { qty, name, price, img } }
+    const cart = {};
+
+    function formatGs(n){
+        try { return n.toLocaleString('de-DE') + ' Gs'; }
+        catch (e) { return n + ' Gs'; }
+    }
+
+    function updateCartTotal(){
+        let total = 0;
+        Object.values(cart).forEach(it => total += it.price * it.qty);
+        cartTotalEl.textContent = formatGs(total);
+        cartTotalFinal.textContent = formatGs(total);
+
+        cartTotalEl.classList.add('flash');
+        setTimeout(()=> cartTotalEl.classList.remove('flash'), 220);
+
+        renderCartDropdown();
+    }
+
+    function renderCartDropdown(){
+        cartItemsEl.innerHTML = '';
+        const keys = Object.keys(cart);
+        if (keys.length === 0) {
+            cartItemsEl.innerHTML = '<li style="padding:12px;text-align:center;color:#666">El carrito está vacío</li>';
+            return;
+        }
+        keys.forEach(key => {
+            const it = cart[key];
+            const li = document.createElement('li');
+            li.className = 'cart-item';
+            li.innerHTML = `
+                <img src="${it.img}" alt="${escapeHtml(it.name)}"/>
+                <div class="meta">
+                    <div class="name">${escapeHtml(it.name)}</div>
+                    <div class="qty-sub"><span>x ${it.qty}</span><span>${formatGs(it.price * it.qty)}</span></div>
+                </div>
+                <button class="remove" data-key="${key}" title="Quitar">✕</button>
+            `;
+            cartItemsEl.appendChild(li);
+        });
+
+        // attach remove handlers
+        cartItemsEl.querySelectorAll('.remove').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const k = btn.getAttribute('data-key');
+                delete cart[k];
+                updateCartTotal();
+            });
+        });
+    }
+
+    // helper para escapar texto en HTML
+    function escapeHtml(s){
+        return String(s).replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]; });
+    }
+
+    // Inicializar controles para cada producto
+    productos.forEach((p, idx) => {
+        const minus = p.querySelector('.qty-btn.minus');
+        const plus = p.querySelector('.qty-btn.plus');
+        const input = p.querySelector('.qty-input');
+        const addBtn = p.querySelector('.add-to-cart');
+        const price = Number(p.getAttribute('data-price')) || 0;
+        const name = (p.querySelector('h3') || { textContent: 'Producto' }).textContent.trim();
+        const img = (p.querySelector('img') || {}).src || '';
+
+        // asegurar valor inicial 0
+        input.value = 0;
+
+        minus.addEventListener('click', () => {
+            input.value = Math.max(0, Number(input.value) - 1);
+        });
+        plus.addEventListener('click', () => {
+            input.value = Math.max(0, Number(input.value) + 1);
+        });
+
+        input.addEventListener('input', () => {
+            let v = parseInt(input.value, 10);
+            if (isNaN(v) || v < 0) v = 0;
+            input.value = v;
+        });
+
+        addBtn.addEventListener('click', () => {
+            const qty = Math.max(0, parseInt(input.value, 10) || 0);
+            if (qty <= 0) return;
+
+            if (!cart[idx]) {
+                cart[idx] = { qty: qty, name: name, price: price, img: img };
+            } else {
+                cart[idx].qty += qty;
+            }
+
+            input.value = 0;
+
+            try { p.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.03)' }, { transform: 'scale(1)' }], { duration: 220 }); } catch(e){}
+
+            updateCartTotal();
+            cartSummary.classList.add('open');
+            cartDropdown.setAttribute('aria-hidden', 'false');
+            setTimeout(()=> {
+                cartSummary.classList.remove('open');
+                cartDropdown.setAttribute('aria-hidden', 'true');
+            }, 2200);
+        });
+    });
+
+    cartSummary.addEventListener('mouseenter', () => {
+        cartSummary.classList.add('open');
+        cartDropdown.setAttribute('aria-hidden', 'false');
+    });
+    cartSummary.addEventListener('mouseleave', () => {
+        cartSummary.classList.remove('open');
+        cartDropdown.setAttribute('aria-hidden', 'true');
+    });
+
+    cartSummary.addEventListener('click', (e) => {
+        // evitar que cierre si clickean dentro del dropdown
+        if (e.target.closest('.cart-dropdown')) return;
+
+        const isOpen = cartSummary.classList.contains('open');
+        if (isOpen) {
+            cartSummary.classList.remove('open');
+            cartDropdown.setAttribute('aria-hidden', 'true');
+        } else {
+            cartSummary.classList.add('open');
+            cartDropdown.setAttribute('aria-hidden', 'false');
+        }
+    });
+
+    // vaciar carrito
+    clearBtn.addEventListener('click', () => {
+        if (Object.keys(cart).length === 0) return;
+        if(confirm('¿Seguro que deseas vaciar el carrito?')) {
+            Object.keys(cart).forEach(k => delete cart[k]);
+            updateCartTotal();
+        }
+    });
+
+    // BOTÓN PAGAR (NUEVO)
+    checkoutBtn.addEventListener('click', () => {
+        if (Object.keys(cart).length === 0) {
+            alert("Tu carrito está vacío. Agrega productos primero.");
+            return;
+        }
+        // Aquí puedes redirigir a una página de pago o a WhatsApp
+        alert("¡Redirigiendo a finalizar compra!");
+        // Ejemplo: window.location.href = 'checkout.html';
+    });
+
+    updateCartTotal();
+});
+</script>
 
 </body>
 </html>
