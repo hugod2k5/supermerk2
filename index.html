@@ -107,6 +107,81 @@
         }
 
         #cart-total.flash { transform: scale(1.04); transition: transform .14s ease; }
+        
+        /* =========================================
+           VERSION MÓVIL (RESPONSIVE)
+           ========================================= */
+        @media (max-width: 768px) {
+            /* 1. HEADER: Que se apile verticalmente */
+            .header .container {
+                flex-direction: column;
+                gap: 15px;
+                padding-bottom: 10px;
+            }
+            
+            /* 2. MENÚ: Botones más grandes y centrados */
+            .nav {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+                width: 100%;
+            }
+            .nav a {
+                background: rgba(255,255,255,0.1);
+                padding: 8px 12px;
+                border-radius: 6px;
+                font-size: 14px;
+            }
+
+            /* 3. CARRITO: Barra completa abajo del menú */
+            .cart-summary {
+                width: 100%;
+                justify-content: center;
+                background: rgba(0,0,0,0.1);
+                padding: 10px;
+                border-radius: 8px;
+            }
+            /* El dropdown del carrito que no se salga de la pantalla */
+            .cart-dropdown {
+                width: 90%; 
+                left: 5%;   
+                right: auto;
+            }
+
+            /* 4. GRILLA DE PRODUCTOS: 2 columnas en celular */
+            .grid-productos {
+                grid-template-columns: repeat(2, 1fr); 
+                gap: 10px;
+            }
+
+            /* 5. AJUSTES DE TARJETA PEQUEÑA */
+            .producto {
+                padding: 10px;
+            }
+            .producto h3 {
+                font-size: 0.9rem; 
+                min-height: 35px;
+            }
+            .producto img {
+                height: 100px; 
+            }
+            /* Botón agregar más compacto */
+            .producto button.add-to-cart {
+                padding: 6px;
+                font-size: 12px;
+            }
+            /* Controles + y - más compactos */
+            .qty-btn {
+                width: 30px;
+                height: 30px;
+                font-size: 14px;
+            }
+            .qty-input {
+                width: 40px;
+                padding: 4px;
+                font-size: 14px;
+            }
+        }
     </style>
 </head>
 <body>
